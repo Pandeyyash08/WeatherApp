@@ -1,34 +1,34 @@
-
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
+import java.io.*;
+import java.net.*;
 
 public class WeatherFetcher {
-
-    private static final String API_KEY = "28f61f4b78b8f9cc89e00e40149d3448"; // your working key
-    private static final String BASE_URL = "https://api.openweathermap.org/data/2.5/weather";
+    private static final String WEATHER_URL = "https://api.openweathermap.org/data/2.5/weather";
+    private static final String FORECAST_URL = "https://api.openweathermap.org/data/2.5/forecast";
+    private static final String API_KEY = "28f61f4b78b8f9cc89e00e40149d3448";
 
     public static String getWeatherXML(String city) throws Exception {
-        String endpoint = String.format("%s?q=%s&mode=xml&units=metric&appid=%s", BASE_URL, city, API_KEY);
-        URL url = new URL(endpoint);
+        String urlString = WEATHER_URL + "?q=" + URLEncoder.encode(city, "UTF-8") + "&mode=xml&units=metric&appid=" + API_KEY;
+        return fetchData(urlString);
+    }
 
-        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+    public static String getForecastXML(String city) throws Exception {
+        String urlString = FORECAST_URL + "?q=" + URLEncoder.encode(city, "UTF-8") + "&mode=xml&units=metric&appid=" + API_KEY;
+        return fetchData(urlString);
+    }
+
+    private static String fetchData(String urlString) throws Exception {
+        HttpURLConnection conn = (HttpURLConnection) new URL(urlString).openConnection();
         conn.setRequestMethod("GET");
 
-        if (conn.getResponseCode() != 200) {
-            throw new RuntimeException("HTTP error code : " + conn.getResponseCode());
+        try (BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()))) {
+            StringBuilder content = new StringBuilder();
+            String inputLine;
+            while ((inputLine = in.readLine()) != null) {
+                content.append(inputLine);
+            }
+            return content.toString();
+        } finally {
+            conn.disconnect();
         }
-
-        BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-        StringBuilder response = new StringBuilder();
-        String line;
-        while ((line = br.readLine()) != null) {
-            response.append(line);
-        }
-        br.close();
-        conn.disconnect();
-
-        return response.toString();
     }
 }

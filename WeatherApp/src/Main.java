@@ -1,44 +1,56 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Weather Forecast App</title>
-  <link rel="stylesheet" href="style.css">
-</head>
-<body>
-  <div class="app">
-    <h1>🌦️ Weather Forecast App</h1>
 
-    <div class="top-section">
-      <div class="search-box">
-        <input type="text" id="cityInput" placeholder="Enter city name...">
-        <button id="searchBtn">Search</button>
-      </div>
+import java.util.Scanner;
+import java.util.concurrent.*;
 
-      <div class="favorite-section">
-        <h3>⭐ Favorite Cities</h3>
-        <ul id="favoriteList"></ul>
-      </div>
-    </div>
+public class Main {
+    private static final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
 
-    <div class="content">
-      <div id="weatherDisplay" class="weather-card hidden">
-        <h2 id="cityName"></h2>
-        <p id="temperature"></p>
-        <p id="condition"></p>
-        <p id="humidity"></p>
-        <p id="wind"></p>
-        <button id="addFavorite">Add to Favorites</button>
-      </div>
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+        System.out.println("=== Weather Information App (Console) ===");
 
-      <div id="forecastContainer" class="forecast hidden">
-        <h3>5-Day Forecast</h3>
-        <div id="forecastCards" class="forecast-grid"></div>
-      </div>
-    </div>
-  </div>
+        while (true) {
+            System.out.print("\nEnter city name (or 'exit'): ");
+            String city = sc.nextLine().trim();
+            if (city.equalsIgnoreCase("exit")) break;
+            if (city.isEmpty()) continue;
 
-  <script src="script.js"></script>
-</body>
-</html>
+            try {
+                fetchAndShow(city);
+                // optional: schedule auto-refresh every 10 minutes (demonstration)
+                System.out.print("Auto-refresh every 10 minutes? (y/N): ");
+                String ans = sc.nextLine().trim();
+                if (ans.equalsIgnoreCase("y")) {
+                    scheduler.scheduleAtFixedRate(() -> {
+                        try {
+                            System.out.println("\n[Auto-refresh]");
+                            fetchAndShow(city);
+                        } catch (Exception e) {
+                            System.out.println("Auto-refresh error: " + e.getMessage());
+                        }
+                    }, 10, 10, TimeUnit.MINUTES);
+                    System.out.println("Auto-refresh scheduled. Type 'exit' to quit.");
+                }
+            } catch (Exception e) {
+                System.out.println("Error: " + e.getMessage());
+            }
+        }
+
+        scheduler.shutdown();
+        sc.close();
+        System.out.println("Exiting. Bye!");
+    }
+
+    private static void fetchAndShow(String city) throws Exception {
+        String xml = WeatherFetcher.getWeatherXML(city);
+        WeatherData data = XMLParser.parseWeatherData(xml);
+        System.out.println(data.toString());
+
+        System.out.print("Save this report? (y/N): ");
+        Scanner sc = new Scanner(System.in);
+        if (sc.nextLine().trim().equalsIgnoreCase("y")) {
+            String fileName = city.replaceAll("\\s+","_") + "_report.txt";
+            ReportExporter.exportToFile(data, fileName);
+        }
+    }
+}

@@ -135,16 +135,57 @@ h1 {
   justify-content: space-between;
   overflow-x: auto;
   gap: 15px;
-  padding-top: 10px;
+  padding: 10px 0;
 }
 
-.forecast-day {
+.forecast-card {
   background-color: rgba(255, 255, 255, 0.2);
-  border-radius: 10px;
-  padding: 15px;
-  min-width: 150px;
+  border-radius: 15px;
+  padding: 20px;
+  min-width: 160px;
   text-align: center;
   flex-shrink: 0;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.forecast-card:hover {
+  transform: translateY(-5px);
+  background-color: rgba(255, 255, 255, 0.3);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+}
+
+.forecast-card h3 {
+  margin: 0 0 12px 0;
+  color: #ffd700;
+  font-size: 1.1em;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+.forecast-card p {
+  margin: 6px 0;
+  font-size: 0.95em;
+  color: #f0f0f0;
+}
+
+.forecast-card .temp {
+  font-size: 1.4em;
+  font-weight: bold;
+  color: #3498db;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+  margin: 10px 0;
+}
+
+.forecast-card .weather {
+  color: #e0e0e0;
+  font-weight: 500;
+}
+
+.forecast-card .humidity,
+.forecast-card .wind {
+  font-size: 0.9em;
+  color: #d0d0d0;
 }
 
 .hidden {

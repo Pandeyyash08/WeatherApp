@@ -85,3 +85,6 @@ Acknowledgments
 OpenWeather API for weather data
 Unsplash for dynamic background images
 Weather icons from OpenWeather
+
+<img width="939" height="543" alt="image" src="https://github.com/user-attachments/assets/cf7822cf-6813-4ad5-9acb-9628e3cb6e7d" />
+
